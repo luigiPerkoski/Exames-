@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrinho de Compras</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 {
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group input[type="text"] {
+            padding: 10px;
+            width: 300px;
+        }
+        .form-group button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .form-group button:hover {
+            background-color: #0056b3;
+        }
+        .total {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        .btn-clear {
+            padding: 10px 20px;
+            background-color: #dc3545;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btn-clear:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Carrinho de Compras</h1>
+
+        <!-- Formulário de Pesquisa -->
+        <form method="GET">
+            <div class="form-group">
+                <input type="text" name="search" placeholder="Pesquisar item..." value="{{ request.GET.search }}">
+                <button type="submit">Pesquisar</button>
+            </div>
+        </form>
+        
+        <!-- Itens Disponíveis -->
+        <h2>Itens Disponíveis</h2>
+        <form method="POST">
+            {% csrf_token %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Selecionar</th>
+                        <th>Código</th>
+                        <th>Item</th>
+                        <th>Preço Unitário</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in items %}
+                        <tr>
+                            <td><input type="checkbox" name="items" value="{{ item.codigo }}"></td>
+                            <td>{{ item.codigo }}</td>
+                            <td>{{ item.nome }}</td>
+                            <td>R${{ item.preço }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <button type="submit">Adicionar ao Carrinho</button>
+        </form>
+        
+        <!-- Carrinho de Compras -->
+        <h2>Carrinho de Compras</h2>
+        <form method="POST" action="{% url 'clear_cart' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn-clear">Limpar Carrinho</button>
+        </form>
+        
+        {% if cart %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Código</th>
+                        <th>Quantidade</th>
+                        <th>Preço Unitário</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item_name, quantity in cart.items %}
+                            <tr>
+                                <td>{{ item_name }}</td>
+                                <td>{{ item.1 }}</td>
+                                <td>{{ quantity }}</td>
+                                <td>R${{ item_prices }}</td>
+                                <td>R${{ item_prices }}</td>
+                            </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>Seu carrinho está vazio.</p>
+        {% endif %}
+        
+        <p class="total">Total: R${{ total }}</p>
+    </div>
+</body>
+</html>
