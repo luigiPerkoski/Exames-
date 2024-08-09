@@ -10,17 +10,27 @@
             margin: 0;
             padding: 0;
             background-color: #f4f4f4;
+            color: #333;
         }
         .container {
-            width: 80%;
-            margin: 0 auto;
+            width: 90%;
+            max-width: 1200px;
+            margin: 30px auto;
             padding: 20px;
             background-color: #fff;
             border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-        h1, h2 {
-            color: #333;
+        h1 {
+            color: #0056b3; /* Cor primária azul */
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        h2 {
+            color: #0056b3; /* Cor primária azul */
+            border-bottom: 2px solid #0056b3;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
         }
         table {
             width: 100%;
@@ -31,50 +41,81 @@
             border: 1px solid #ddd;
         }
         th, td {
-            padding: 10px;
+            padding: 12px;
             text-align: left;
         }
         th {
-            background-color: #f4f4f4;
+            background-color: #e9ecef; /* Cor secundária para cabeçalhos */
         }
         .form-group {
             margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
         }
         .form-group input[type="text"] {
             padding: 10px;
-            width: 300px;
+            width: 100%;
+            max-width: 300px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
         }
         .form-group button {
             padding: 10px 20px;
-            background-color: #007bff;
+            background-color: #0056b3; /* Cor primária azul */
             color: #fff;
             border: none;
             border-radius: 4px;
             cursor: pointer;
+            font-size: 1em;
         }
         .form-group button:hover {
-            background-color: #0056b3;
-        }
-        .total {
-            font-size: 1.2em;
-            font-weight: bold;
+            background-color: #003d7a; /* Azul mais escuro para hover */
         }
         .btn-clear {
             padding: 10px 20px;
-            background-color: #dc3545;
+            background-color: #dc3545; /* Cor para o botão de limpar */
             color: #fff;
             border: none;
             border-radius: 4px;
             cursor: pointer;
+            font-size: 1em;
+            display: block;
+            margin: 20px auto;
         }
         .btn-clear:hover {
-            background-color: #c82333;
+            background-color: #c82333; /* Vermelho mais escuro para hover */
+        }
+        .total {
+            font-size: 1.4em;
+            font-weight: bold;
+            margin-top: 20px;
+            text-align: center;
+        }
+        .empty-cart-message {
+            text-align: center;
+            font-style: italic;
+            color: #888;
+        }
+        @media (max-width: 768px) {
+            .form-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .form-group input[type="text"] {
+                max-width: 100%;
+                margin-bottom: 10px;
+            }
+            .form-group button {
+                width: 100%;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Carrinho de Compras</h1>
+        <h1>Dimeg</h1>
 
         <!-- Formulário de Pesquisa -->
         <form method="GET">
@@ -85,7 +126,7 @@
         </form>
         
         <!-- Itens Disponíveis -->
-        <h2>Itens Disponíveis</h2>
+        <h2>Exames</h2>
         <form method="POST">
             {% csrf_token %}
             <table>
@@ -100,51 +141,46 @@
                 <tbody>
                     {% for item in items %}
                         <tr>
-                            <td><input type="checkbox" name="items" value="{{ item.codigo }}"></td>
-                            <td>{{ item.codigo }}</td>
-                            <td>{{ item.nome }}</td>
-                            <td>R${{ item.preço }}</td>
+                            <td><input type="checkbox" name="items" value="{{ item.code }}"></td>
+                            <td>{{ item.code }}</td>
+                            <td>{{ item.name }}</td>
+                            <td>R${{ item.price }}</td>
                         </tr>
                     {% endfor %}
                 </tbody>
             </table>
-            <button type="submit">Adicionar ao Carrinho</button>
+            <button type="submit" class="btn-clear" style="background-color: #0056b3;">Adicionar ao Carrinho</button>
         </form>
         
         <!-- Carrinho de Compras -->
-        <h2>Carrinho de Compras</h2>
+        <h2>Exames Selecionados</h2>
         <form method="POST" action="{% url 'clear_cart' %}">
             {% csrf_token %}
-            <button type="submit" class="btn-clear">Limpar Carrinho</button>
+            <button type="submit" class="btn-clear">Limpar</button>
         </form>
         
-        {% if cart %}
+        {% if itens_check %}
             <table>
                 <thead>
                     <tr>
-                        <th>Item</th>
                         <th>Código</th>
-                        <th>Quantidade</th>
-                        <th>Preço Unitário</th>
-                        <th>Total</th>
+                        <th>Item</th>
+                        <th>Preço</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for item_name, quantity in cart.items %}
-                            <tr>
-                                <td>{{ item_name }}</td>
-                                <td>{{ item.1 }}</td>
-                                <td>{{ quantity }}</td>
-                                <td>R${{ item_prices }}</td>
-                                <td>R${{ item_prices }}</td>
-                            </tr>
+                    {% for item in itens_check %}
+                        <tr>
+                            <td>{{ item.code }}</td>
+                            <td>{{ item.name }}</td>
+                            <td>R${{ item.price }}</td>
+                        </tr>
                     {% endfor %}
                 </tbody>
             </table>
         {% else %}
-            <p>Seu carrinho está vazio.</p>
+            <p class="empty-cart-message">Nenhum exame na cotação</p>
         {% endif %}
-        
         <p class="total">Total: R${{ total }}</p>
     </div>
 </body>
