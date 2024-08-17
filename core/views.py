@@ -58,3 +58,19 @@ def clear_cart(request):
         c.is_checked = False
         c.save()
     return redirect(reverse('index'))
+
+def criar_novo_objeto(request):
+    if request.method == "POST":
+        nome = request.POST.get('nome')
+        descricao = request.POST.get('descricao')
+        novo_campo = request.POST.get('novo_campo')
+        
+        # Cria um novo objeto na model
+        novo_objeto = object.objects.create(
+            nome=nome,
+            descricao=descricao,
+            novo_campo=novo_campo
+        )
+        
+        # Opcional: redireciona para outra página ou exibe uma mensagem
+        return redirect('nome_da_sua_view')
