@@ -1,52 +1,38 @@
-import pandas as pd
 from openpyxl import load_workbook
 
-def ler_com_pandas(caminho_arquivo, nome_planilha):
-    # Carrega o arquivo Excel usando pandas
-    df = pd.read_excel(caminho_arquivo, sheet_name=nome_planilha)
-    
-    # Exibe as primeiras linhas do DataFrame
-    print("Dados lidos com pandas:")
-    print(df.head())
-
-    # Retorna o DataFrame como uma lista de dicionários
-    return df.to_dict(orient='records')
 
 def ler_com_openpyxl(caminho_arquivo, nome_planilha):
-    # Carrega o arquivo Excel usando openpyxl
-    wb = load_workbook(caminho_arquivo)
+
+    wb = load_workbook(caminho_arquivo, data_only=True)
     sheet = wb[nome_planilha]
 
-    # Itera sobre as linhas da planilha
     dados = []
-    for row in sheet.iter_rows(min_row=2, values_only=True):  # min_row=2 pula o cabeçalho
-        dados.append(row)
-    
-    print("Dados lidos com openpyxl:")
-    for linha in dados:
-        print(linha)
+    for row in sheet.iter_rows(min_row=2, values_only=False):
+        apelido = row[0].value
+        nome = row[1].value
+
+        # Resolver a fórmula em 'price'
+        cell_price = row[4]
+        if cell_price.data_type == 'f':  # Se a célula contém uma fórmula
+            price = cell_price.internal_value  # Obtenha o resultado da fórmula
+        else:
+            price = cell_price.value  # Caso contrário, pegue o valor direto
+
+        # Formatar 'price' para duas casas decimais
+        price = f'{price:.2f}' if isinstance(price, (int, float)) else price
+
+        linha = {'surname': apelido, 'name': nome, 'price': price}
+        dados.append(linha)
+
 
     return dados
 
 def main():
-    caminho_arquivo = r"C:\Luigi\Document\Code\Python\Project\Exames\TabelaLab.xlsx"  # Caminho completo para o arquivo Excel
-    nome_planilha = 'Planilha1'  # Substitua pelo nome da sua planilha
+    caminho_arquivo = r"C:\Luigi\Document\Code\Python\Project\Exames\TabelaLab.xlsx" 
+    nome_planilha = 'Planilha1'
 
-    # Ler dados usando pandas
-    dados_pandas = ler_com_pandas(caminho_arquivo, nome_planilha)
-
-    # Ler dados usando openpyxl
-    dados_openpyxl = ler_com_openpyxl(caminho_arquivo, nome_planilha)
-
-    # Exemplo de como acessar os dados lidos com pandas
-    print("\nPrimeiro registro lido com pandas:")
-    if dados_pandas:
-        print(dados_pandas[0])
-
-    # Exemplo de como acessar os dados lidos com openpyxl
-    print("\nPrimeiro registro lido com openpyxl:")
-    if dados_openpyxl:
-        print(dados_openpyxl[0])
+    dados = ler_com_openpyxl(caminho_arquivo, nome_planilha)
+    print(dados[2])
 
 if __name__ == "__main__":
     main()

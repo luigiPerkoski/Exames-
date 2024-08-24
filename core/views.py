@@ -1,5 +1,6 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, HttpResponse
 from django.urls import reverse
+from .planilha import ler_com_openpyxl
 from .models import Product
 from django.db.models import Q
 
@@ -59,18 +60,19 @@ def clear_cart(request):
         c.save()
     return redirect(reverse('index'))
 
-def criar_novo_objeto(request):
-    if request.method == "POST":
-        nome = request.POST.get('nome')
-        descricao = request.POST.get('descricao')
-        novo_campo = request.POST.get('novo_campo')
-        
-        # Cria um novo objeto na model
-        novo_objeto = object.objects.create(
-            nome=nome,
-            descricao=descricao,
-            novo_campo=novo_campo
-        )
-        
-        # Opcional: redireciona para outra página ou exibe uma mensagem
-        return redirect('nome_da_sua_view')
+
+
+# def teste(request):
+#     caminho_arquivo = r"C:\Luigi\Document\Code\Python\Project\Exames\TabelaLab.xlsx" 
+#     nome_planilha = 'Planilha1'
+
+#     dados = ler_com_openpyxl(caminho_arquivo, nome_planilha)
+#     for linha in dados[2:]:
+#         novo_objeto = Product.objects.create(
+#             code = linha["surname"],
+#             name = linha["name"],
+#             price = linha["price"],
+#             is_checked = False
+#         )
+
+#     return HttpResponse(dados)
