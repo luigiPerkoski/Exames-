@@ -54,7 +54,7 @@ def index(request):
 
 
 def clear_cart(request):
-    itens = Product.objects.all()
+    itens = Product.objects.filter(is_checked=True)
     for c in itens:
         c.is_checked = False
         c.save()
