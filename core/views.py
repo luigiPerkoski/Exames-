@@ -1,23 +1,26 @@
-from django.shortcuts import render, redirect, HttpResponse
+from django.shortcuts import render, redirect
 from django.urls import reverse
-from .planilha import ler_com_openpyxl
 from .models import Product
 from django.db.models import Q
+from django.contrib.auth.decorators import login_required
 
 
 def filter_products(query):
-    # Construindo a consulta Q
-    filters = Q(name__icontains=query) | Q(code__icontains=query)
-    
-    # Aplicando o filtro
-    return Product.objects.filter(filters)
+    if query:
+        # Construindo a consulta Q para buscar por código ou nome
+        filters = Q(name__icontains=query) | Q(code__icontains=query)
+        # Aplicando o filtro
+        return Product.objects.filter(filters)
+    else:
+        # Retorna todos os produtos se a query estiver vazia
+        return Product.objects.all()
 
-
+@login_required(login_url='user/login')
 def index(request):
-    query = request.GET.get('search', '')
-    filtered_items = filter_products(query)
-    itens_check = Product.objects.filter(is_checked=True)
-    cart = request.session.get('cart', {})
+    query = request.GET.get('search', '')  # Obtenha a query da barra de pesquisa
+    filtered_items = filter_products(query)  # Filtra os produtos baseados na query
+    itens_check = Product.objects.filter(is_checked=True)  # Produtos que já foram marcados
+    cart = request.session.get('cart', {})  # Obtenha o carrinho da sessão
 
     if request.method == 'POST':
         if 'items' in request.POST:
@@ -52,27 +55,10 @@ def index(request):
     return render(request, 'core/index.html', context)
 
 
-
+@login_required(login_url='user/login')
 def clear_cart(request):
     itens = Product.objects.filter(is_checked=True)
     for c in itens:
         c.is_checked = False
         c.save()
     return redirect(reverse('index'))
-
-
-
-# def teste(request):
-#     caminho_arquivo = r"C:\Luigi\Document\Code\Python\Project\Exames\TabelaLab.xlsx" 
-#     nome_planilha = 'Planilha1'
-
-#     dados = ler_com_openpyxl(caminho_arquivo, nome_planilha)
-#     for linha in dados[2:]:
-#         novo_objeto = Product.objects.create(
-#             code = linha["surname"],
-#             name = linha["name"],
-#             price = linha["price"],
-#             is_checked = False
-#         )
-
-#     return HttpResponse(dados)

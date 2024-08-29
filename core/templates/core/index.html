@@ -116,40 +116,13 @@
 <body>
     <div class="container">
         <h1>Dimeg</h1>
-
+        
         <!-- Formulário de Pesquisa -->
         <form method="GET">
             <div class="form-group">
                 <input type="text" name="search" placeholder="Pesquisar item..." value="{{ request.GET.search }}">
                 <button type="submit">Pesquisar</button>
             </div>
-        </form>
-        
-        <!-- Itens Disponíveis -->
-        <h2>Exames</h2>
-        <form method="POST">
-            {% csrf_token %}
-            <table>
-                <thead>
-                    <tr>
-                        <th>Selecionar</th>
-                        <th>Código</th>
-                        <th>Item</th>
-                        <th>Preço Unitário</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for item in items %}
-                        <tr>
-                            <td><input type="checkbox" name="items" value="{{ item.code }}"></td>
-                            <td>{{ item.code }}</td>
-                            <td>{{ item.name }}</td>
-                            <td>R${{ item.price }}</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            <button type="submit" class="btn-clear" style="background-color: #0056b3;">Adicionar ao Carrinho</button>
         </form>
         
         <!-- Carrinho de Compras -->
@@ -182,6 +155,34 @@
             <p class="empty-cart-message">Nenhum exame na cotação</p>
         {% endif %}
         <p class="total">Total: R${{ total }}</p>
+        <!-- Itens Disponíveis -->
+        <h2>Exames</h2>
+        <form method="POST">
+            {% csrf_token %}
+            <button type="submit" class="btn-clear" style="background-color: #0056b3;">Adicionar ao Carrinho</button>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Selecionar</th>
+                        <th>Código</th>
+                        <th>Item</th>
+                        <th>Preço Unitário</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in items %}
+                        <tr>
+                            <td><input type="checkbox" name="items" value="{{ item.code }}"></td>
+                            <td>{{ item.code }}</td>
+                            <td>{{ item.name }}</td>
+                            <td>R${{ item.price }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            
+        </form>
+        
     </div>
 </body>
 </html>
