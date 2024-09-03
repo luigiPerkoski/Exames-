@@ -185,40 +185,12 @@
         
         <!-- Guias para os Itens Disponíveis -->
         <div class="tab">
-            <div class="tab-link active" data-tab="IMG">Imagem</div>
-            <div class="tab-link" data-tab="LAB">Laboratoriais</div>
+            <div class="tab-link active" data-tab="LAB">Laboratoriais</div>
+            <div class="tab-link" data-tab="IMG">Imagem</div>
             <div class="tab-link" data-tab="CRD">Cardiológico</div>
         </div>
         
-        <div id="IMG" class="tab-content active">
-            <h2>Exames de Imagem</h2>
-            <form method="POST">
-                {% csrf_token %}
-                <button type="submit" class="btn-clear" style="background-color: #0056b3;">Adicionar ao Carrinho</button>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Selecionar</th>
-                            <th>Código</th>
-                            <th>Item</th>
-                            <th>Preço Unitário</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for item in filtered_exames_img %}
-                            <tr>
-                                <td><input type="checkbox" name="items" value="{{ item.code }}"></td>
-                                <td>{{ item.code }}</td>
-                                <td>{{ item.name }}</td>
-                                <td>R${{ item.price }}</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </form>
-        </div>
-        
-        <div id="LAB" class="tab-content">
+        <div id="LAB" class="tab-content active">
             <h2>Exames Laboratoriais</h2>
             <form method="POST">
                 {% csrf_token %}
@@ -234,6 +206,34 @@
                     </thead>
                     <tbody>
                         {% for item in filtered_exames_lab %}
+                            <tr>
+                                <td><input type="checkbox" name="items" value="{{ item.code }}"></td>
+                                <td>{{ item.code }}</td>
+                                <td>{{ item.name }}</td>
+                                <td>R${{ item.price }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </form>
+        </div>
+        
+        <div id="IMG" class="tab-content">
+            <h2>Exames de Imagem</h2>
+            <form method="POST">
+                {% csrf_token %}
+                <button type="submit" class="btn-clear" style="background-color: #0056b3;">Adicionar ao Carrinho</button>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Selecionar</th>
+                            <th>Código</th>
+                            <th>Item</th>
+                            <th>Preço Unitário</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in filtered_exames_img %}
                             <tr>
                                 <td><input type="checkbox" name="items" value="{{ item.code }}"></td>
                                 <td>{{ item.code }}</td>
