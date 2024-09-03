@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Carrinho de Compras</title>
     <style>
+        /* Estilos gerais */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -98,6 +99,32 @@
             font-style: italic;
             color: #888;
         }
+        /* Estilos para as guias */
+        .tab {
+            display: flex;
+            cursor: pointer;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ddd;
+        }
+        .tab div {
+            padding: 10px 20px;
+            background-color: #e9ecef;
+            margin-right: 5px;
+            border-top-left-radius: 4px;
+            border-top-right-radius: 4px;
+        }
+        .tab div.active {
+            background-color: #fff;
+            border-bottom: 2px solid #fff;
+            color: #0056b3;
+            font-weight: bold;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
         @media (max-width: 768px) {
             .form-group {
                 flex-direction: column;
@@ -155,34 +182,111 @@
             <p class="empty-cart-message">Nenhum exame na cotação</p>
         {% endif %}
         <p class="total">Total: R${{ total }}</p>
-        <!-- Itens Disponíveis -->
-        <h2>Exames</h2>
-        <form method="POST">
-            {% csrf_token %}
-            <button type="submit" class="btn-clear" style="background-color: #0056b3;">Adicionar ao Carrinho</button>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Selecionar</th>
-                        <th>Código</th>
-                        <th>Item</th>
-                        <th>Preço Unitário</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for item in items %}
+        
+        <!-- Guias para os Itens Disponíveis -->
+        <div class="tab">
+            <div class="tab-link active" data-tab="IMG">Imagem</div>
+            <div class="tab-link" data-tab="LAB">Laboratoriais</div>
+            <div class="tab-link" data-tab="CRD">Cardiológico</div>
+        </div>
+        
+        <div id="IMG" class="tab-content active">
+            <h2>Exames de Imagem</h2>
+            <form method="POST">
+                {% csrf_token %}
+                <button type="submit" class="btn-clear" style="background-color: #0056b3;">Adicionar ao Carrinho</button>
+                <table>
+                    <thead>
                         <tr>
-                            <td><input type="checkbox" name="items" value="{{ item.code }}"></td>
-                            <td>{{ item.code }}</td>
-                            <td>{{ item.name }}</td>
-                            <td>R${{ item.price }}</td>
+                            <th>Selecionar</th>
+                            <th>Código</th>
+                            <th>Item</th>
+                            <th>Preço Unitário</th>
                         </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            
-        </form>
+                    </thead>
+                    <tbody>
+                        {% for item in filtered_exames_img %}
+                            <tr>
+                                <td><input type="checkbox" name="items" value="{{ item.code }}"></td>
+                                <td>{{ item.code }}</td>
+                                <td>{{ item.name }}</td>
+                                <td>R${{ item.price }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </form>
+        </div>
+        
+        <div id="LAB" class="tab-content">
+            <h2>Exames Laboratoriais</h2>
+            <form method="POST">
+                {% csrf_token %}
+                <button type="submit" class="btn-clear" style="background-color: #0056b3;">Adicionar ao Carrinho</button>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Selecionar</th>
+                            <th>Código</th>
+                            <th>Item</th>
+                            <th>Preço Unitário</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in filtered_exames_lab %}
+                            <tr>
+                                <td><input type="checkbox" name="items" value="{{ item.code }}"></td>
+                                <td>{{ item.code }}</td>
+                                <td>{{ item.name }}</td>
+                                <td>R${{ item.price }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </form>
+        </div>
+        
+        <div id="CRD" class="tab-content">
+            <h2>Exames Cardiológicos</h2>
+            <form method="POST">
+                {% csrf_token %}
+                <button type="submit" class="btn-clear" style="background-color: #0056b3;">Adicionar ao Carrinho</button>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Selecionar</th>
+                            <th>Código</th>
+                            <th>Item</th>
+                            <th>Preço Unitário</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in filtered_exames_crd %}
+                            <tr>
+                                <td><input type="checkbox" name="items" value="{{ item.code }}"></td>
+                                <td>{{ item.code }}</td>
+                                <td>{{ item.name }}</td>
+                                <td>R${{ item.price }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </form>
+        </div>
         
     </div>
+    
+    <script>
+        // Script para alternar entre as guias
+        document.querySelectorAll('.tab-link').forEach(link => {
+            link.addEventListener('click', function() {
+                document.querySelectorAll('.tab-link').forEach(tab => tab.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+                
+                this.classList.add('active');
+                document.getElementById(this.getAttribute('data-tab')).classList.add('active');
+            });
+        });
+    </script>
 </body>
 </html>
