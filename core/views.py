@@ -1,8 +1,10 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse
-from .models import Product
+from .models import Product, Cart
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
+from django.db.models import Sum
+
 
 
 def filter_products(query):
@@ -26,16 +28,24 @@ def index(request):
     filtered_exames_lab = filtered_items.filter(type='LAB')
     filtered_exames_crd = filtered_items.filter(type='CRD')
     
-    itens_check = Product.objects.filter(is_checked=True)  # Produtos que já foram marcados
-    cart = request.session.get('cart', {})  # Obtenha o carrinho da sessão
+    try:
+        cart = Cart.objects.get(user=request.user)  # Tenta obter o carrinho associado ao usuário
+    except Cart.DoesNotExist:
+        cart = Cart(user=request.user)  # Cria um novo carrinho se não existir
+        cart.save()  # Salva o novo carrinho no banco de dados  
+
+    itens_check = cart.product
 
     if request.method == 'POST':
         if 'items' in request.POST:
-            selected_items = request.POST.getlist('items')
-            Product.objects.filter(code__in=selected_items).update(is_checked=True)
+            code_items = request.POST.getlist('items')
+            selected_items = Product.objects.filter(code__in=code_items)  
+            cart.product.add(*selected_items)
             return redirect(reverse('index'))
         elif 'clear_cart' in request.POST:
             # Exemplo de lógica para limpar algo, se necessário
+            cart.product.clear()
+            cart.save()
             return redirect(reverse('index'))
         elif 'add_product' in request.POST:
             name = request.POST.get('name')
@@ -49,23 +59,14 @@ def index(request):
                     pass  # Trate o erro de conversão de preço, se necessário
             return redirect(reverse('index'))
 
-    total = sum(item.price for item in itens_check)
+    total = f"{itens_check.all().aggregate(total_price=Sum('price'))['total_price']or 0:.2f}"
 
     context = {
         'items': filtered_items,
         'filtered_exames_img': filtered_exames_img,
         'filtered_exames_lab': filtered_exames_lab,
         'filtered_exames_crd': filtered_exames_crd,
-        'itens_check': itens_check,
+        'itens_check': cart.product,
         'total': total,
     }
     return render(request, 'core/index.html', context)
-
-
-@login_required(login_url='user/login')
-def clear_cart(request):
-    itens = Product.objects.filter(is_checked=True)
-    for c in itens:
-        c.is_checked = False
-        c.save()
-    return redirect(reverse('index'))

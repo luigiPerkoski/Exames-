@@ -154,12 +154,12 @@
         
         <!-- Carrinho de Compras -->
         <h2>Exames Selecionados</h2>
-        <form method="POST" action="{% url 'clear_cart' %}">
+        <form method="POST">
             {% csrf_token %}
-            <button type="submit" class="btn-clear">Limpar</button>
+            <button type="submit" name="clear_cart" class="btn-clear">Limpar</button>
         </form>
         
-        {% if itens_check %}
+        {% if itens_check.all %}
             <table>
                 <thead>
                     <tr>
@@ -169,7 +169,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for item in itens_check %}
+                    {% for item in itens_check.all %}
                         <tr>
                             <td>{{ item.code }}</td>
                             <td>{{ item.name }}</td>
