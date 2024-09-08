@@ -6,6 +6,25 @@
     <title>Carrinho de Compras</title>
     <style>
         /* Estilos gerais */
+        .icon-button {
+            background: none; /* Remove o fundo padrão do botão */
+            border: none;     /* Remove a borda padrão do botão */
+            padding: 0;       /* Remove o padding padrão */
+            cursor: pointer;  /* Adiciona um cursor de ponteiro para indicar que é clicável */
+        }
+
+        .icon-button i {
+            display: block;   /* Remove o espaço abaixo da imagem */
+            width: 24px;      /* Ajuste o tamanho da imagem conforme necessário */
+            height: 24px;     /* Ajuste o tamanho da imagem conforme necessário */
+        }
+
+        a {
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: none; /* Opcional: sublinhado quando o link é hover */
+        }
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -39,7 +58,7 @@
             margin-bottom: 20px;
         }
         table, th, td {
-            border: 1px solid #ddd;
+            border: 1px solid #dddddd00;
         }
         th, td {
             padding: 12px;
@@ -47,6 +66,7 @@
         }
         th {
             background-color: #e9ecef; /* Cor secundária para cabeçalhos */
+            border: #e9ecef;
         }
         .form-group {
             margin-bottom: 20px;
@@ -83,7 +103,7 @@
             cursor: pointer;
             font-size: 1em;
             display: block;
-            margin: 20px auto;
+            margin-bottom: 20px;
         }
         .btn-clear:hover {
             background-color: #c82333; /* Vermelho mais escuro para hover */
@@ -125,6 +145,15 @@
         .tab-content.active {
             display: block;
         }
+        .buttons-cart {
+            display: flex;
+            justify-content: center; /* Centraliza horizontalmente */
+            gap: 10px; /* Espaço entre os botões */
+        }
+
+        .buttons-cart form {
+            margin: 0; /* Remove margens externas */
+        }
         @media (max-width: 768px) {
             .form-group {
                 flex-direction: column;
@@ -154,10 +183,15 @@
         
         <!-- Carrinho de Compras -->
         <h2>Exames Selecionados</h2>
-        <form method="POST">
-            {% csrf_token %}
-            <button type="submit" name="clear_cart" class="btn-clear">Limpar</button>
-        </form>
+        <div class="buttons-cart">
+            <form method="POST">
+                {% csrf_token %}
+                <button type="submit" name="clear_cart" class="btn-clear">Limpar</button>
+            </form>
+            <a  href="{% url 'imprimir_orcamento' %}" target="_blank">
+                <button class="btn-clear" style="background-color: #a0a0b0" >Imprimir Orçamento</button>
+            </a>
+        </div>
         
         {% if itens_check.all %}
             <table>
@@ -166,6 +200,8 @@
                         <th>Código</th>
                         <th>Item</th>
                         <th>Preço</th>
+                        <th></th>
+                        
                     </tr>
                 </thead>
                 <tbody>
@@ -174,6 +210,14 @@
                             <td>{{ item.code }}</td>
                             <td>{{ item.name }}</td>
                             <td>R${{ item.price }}</td>
+                            <td>
+                                <form method="POST">
+                                    {% csrf_token %}
+                                    <button type="submit" class="icon-button" name="delete_button_{{item.code}}">
+                                        <i class="icon-button" data-lucide="trash-2"></i>
+                                    </button>
+                                </form>
+                            </td>
                         </tr>
                     {% endfor %}
                 </tbody>
@@ -287,6 +331,11 @@
                 document.getElementById(this.getAttribute('data-tab')).classList.add('active');
             });
         });
+    </script>
+    <!-- Development version -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        lucide.createIcons();
     </script>
 </body>
 </html>
